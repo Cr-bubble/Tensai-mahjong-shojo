@@ -1,2 +1,2 @@
-# Tensai-mah-sh-jo
+# Tensai-mahjong-shojo
 ML2024 Final project
