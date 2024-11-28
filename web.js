@@ -5,6 +5,9 @@ function helloword() {
 
 window.helloword = helloword;
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 // MajSoul specific functions
 
@@ -70,6 +73,9 @@ function getCallsOfPlayer(player) {
 	return callArray;
 }
 
+window.ownHand = [];
+// var ownHand = [];
+
 function GetHandData(mainUpdate = true) {
 
 	dora = getDora();
@@ -82,6 +88,8 @@ function GetHandData(mainUpdate = true) {
     // console.log(typeof ownHand); // 應返回 "object"
     // console.log(Array.isArray(ownHand)); // 應返回 true
     console.log(ownHand);
+	window.ownHand = ownHand;
+	console.log(window.ownHand);
     return ownHand;
 
 	// discards = [];
@@ -136,7 +144,7 @@ function GetHandData(mainUpdate = true) {
 window.GetHandData = GetHandData;
 
 
-/*
+
 // // Get operations can do now
 // function getOperations() {
 // 	return mjcore.E_PlayOperation;
@@ -152,23 +160,28 @@ function isSameTile(tile1, tile2, checkDora = false) {
 	return tile1.index == tile2.index && tile1.type == tile2.type;
 }
 
+
+
 //Remove the given Tile from Hand
-function discardTile(tile) {
-	log("Discard: " + getTileName(tile, false));
+async function discardTile(ownHand, tile) {
+	// log("Discard: " + getTileName(tile, false));
+	console.log("Discarding: " + tile);
 	for (var i = 0; i < ownHand.length; i++) {
 		if (isSameTile(ownHand[i], tile, true)) {
 			try {
                 if (view.DesktopMgr.Inst.players[0].hand[i].valid) {
                     view.DesktopMgr.Inst.players[0]._choose_pai = view.DesktopMgr.Inst.players[0].hand[i];
                     view.DesktopMgr.Inst.players[0].DoDiscardTile();
+					await sleep(1000);
+					return true;
                 }
             }
             catch {
                 throw new Error("Cannot discard tile");
             }
-			break;
 		}
 	}
+	throw new Error("Tile not found in hand");
 }
 
 
@@ -181,7 +194,8 @@ function getDiscardTile(tiles) {
 }
 
 async function discard(inputHand) {
-
+	console.log("Discard");
+	console.log(inputHand);
 	var tiles = [];
     
     for (var i = 0; i < inputHand.length; i++) { //Create 13 Tile hands
@@ -194,7 +208,7 @@ async function discard(inputHand) {
         }
 
         tiles.push(inputHand[i]);
-        await new Promise(r => setTimeout(r, 10)); //Sleep a short amount of time to not completely block the browser
+        // await new Promise(r => setTimeout(r, 10)); //Sleep a short amount of time to not completely block the browser
     }
 
 	var tile = getDiscardTile(tiles);
@@ -203,7 +217,12 @@ async function discard(inputHand) {
         throw new Error("No tile to discard");
         return; 
     }
-
+	
+	var flag = await discardTile(inputHand, tile);
+	if(flag == false)
+	{
+		throw new Error("Cannot discard tile");
+	}
 	// var riichi = false;
 	// if (canRiichi()) {
 	// 	tiles.sort(function (p1, p2) {
@@ -217,4 +236,5 @@ async function discard(inputHand) {
 
 	return tile;
 }
-*/
+
+window.discard = discard;
