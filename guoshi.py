@@ -52,7 +52,9 @@ def discard(hands_input):
     #print("棄排後的手牌：", temp_hands)
     #-------
 
-    return out
+    for i, tile in enumerate(hands_input):
+        if(tile.type*9 + tile.index-1 == out):
+            return i
     
 
 # 測試
