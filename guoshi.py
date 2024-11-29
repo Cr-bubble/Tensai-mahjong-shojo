@@ -10,43 +10,43 @@ def determine(hands, new):
     #change here to other algorithms
     #-------
     # 檢查是否滿足國士無雙條件
-    needed_tiles = [i for i in kokushi_indices if hands[i] > 0]  # 已有的幺九和字牌
-    num_pairs = sum(hands[i] >= 2 for i in kokushi_indices)  # 檢查有幾個對子
+    # needed_tiles = [i for i in kokushi_indices if hands[i] > 0]  # 已有的幺九和字牌
+    # num_pairs = sum(hands[i] >= 2 for i in kokushi_indices)  # 檢查有幾個對子
 
-    if len(needed_tiles) == len(kokushi_indices) and num_pairs >= 1:
-        return -1 #lon
-    else:
-        # 棄掉非國士無雙相關的牌
-        drawed = 0
-        for i in range(len(hands)):
+    # if len(needed_tiles) == len(kokushi_indices) and num_pairs >= 1:
+    #     return -1 #lon
+    # else:
+    # 棄掉非國士無雙相關的牌
+    drawed = 0
+    for i in range(len(hands)):
+        if(drawed):
+            break
+        if i not in kokushi_indices:
+            if(hands[i] > 0):
+                hands[i] = max(0, hands[i] - 1)
+                out = i
+                drawed = 1
+    
+    #棄掉大於3張的國士無雙牌
+    if(not drawed):
+        for i in kokushi_indices:
             if(drawed):
                 break
-            if i not in kokushi_indices:
-                if(hands[i] > 0):
-                    hands[i] = max(0, hands[i] - 1)
-                    out = i
-                    drawed = 1
-        
-        #棄掉大於3張的國士無雙牌
-        if(not drawed):
-            for i in kokushi_indices:
-                if(drawed):
-                    break
-                if(hands[i] > 2):
-                    hands[i] = max(0, hands[i] - 1)
-                    out = i
-                    drawed = 1
+            if(hands[i] > 2):
+                hands[i] = max(0, hands[i] - 1)
+                out = i
+                drawed = 1
 
-        #棄掉大於2張的國士無雙牌
-        if(not drawed):
-            for i in kokushi_indices:
-                if(drawed):
-                    break
-                if(hands[i] >= 2):
-                    hands[i] = max(0, hands[i] - 1)
-                    out = i
-                    drawed = 1
-        #print("棄排後的手牌：", temp_hands)
+    #棄掉大於2張的國士無雙牌
+    if(not drawed):
+        for i in kokushi_indices:
+            if(drawed):
+                break
+            if(hands[i] >= 2):
+                hands[i] = max(0, hands[i] - 1)
+                out = i
+                drawed = 1
+    #print("棄排後的手牌：", temp_hands)
     #-------
 
     return out
