@@ -1,9 +1,12 @@
 # 國士無雙所需的牌索引（幺九牌 + 字牌）
 kokushi_indices = [0, 8, 9, 17, 18, 26, 27, 28, 29, 30, 31, 32, 33]
 
-def determine(hands, new):
+def discard(hands_input):
     # 合併手牌與新進牌
-    hands[new] += 1
+    #hands[new] += 1
+    hands = [0] * 34
+    for tile in hands_input:
+        hands[tile.type*9 + tile.index-1] += 1
 
     out = -1 #index of the drawed tile
 
@@ -56,4 +59,14 @@ def determine(hands, new):
 hands = [1, 0, 0, 0, 0, 0, 0, 0, 0,  2, 0, 0, 0, 0, 0, 0, 0, 1,  1, 0, 0, 0, 0, 0, 0, 0, 1,  1, 1, 1, 1, 1, 1, 1]
 #new =   [0, 0, 0, 0, 0, 0, 0, 0, 0,  1, 0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0]
 new = 9
-print(determine(hands, new))
+print(discard(hands, new))
+
+def action(type, combination, hands):
+    #type : chi, pong, kong
+    #combination: 23吃4萬 or 24吃3萬
+
+    decision = 0 
+
+    return decision
+
+
