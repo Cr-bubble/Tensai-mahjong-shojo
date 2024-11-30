@@ -1,2 +1,4 @@
 
 /dataset_extracted
+x_train.npy
+y_train.npy
