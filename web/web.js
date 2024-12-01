@@ -39,6 +39,7 @@ function makeCall(type) {
 function getOperations() {
 	return mjcore.E_PlayOperation;
 }
+window.getOperations = getOperations;
 
 function getDora() {
 	return view.DesktopMgr.Inst.dora;
@@ -60,55 +61,68 @@ function declineCall(operation) {
 		}
 	}
 	catch {
-		log("Failed to decline the Call. Maybe someone else was faster?");
+		console.log("Failed to decline the Call. Maybe someone else was faster?");
 	}
 }
 
 //Closed Kan
-function callAnkan(combination) {
-	makeCall(getOperations().an_gang);
-	// NOT DOING : declineCall(getOperations().an_gang);
+function callAnkan(flag, combination) {
+	if(flag) makeCall(getOperations().an_gang);
+	else declineCall(getOperations().an_gang);
 }
+window.callAnkan = callAnkan;
 
-function callShouminkan() {
-	makeCall(getOperations().add_gang);
+function callShouminkan(flag) {
+	if(flag) makeCall(getOperations().add_gang);
+	else declineCall(getOperations().add_gang);
 	// NOT DOING : declineCall(getOperations().add_gang);
 }
+window.callShouminkan = callShouminkan;
 
-function callDaiminkan() {
-	makeCall(getOperations().ming_gang);
-	// NOT DOING : declineCall(getOperations().ming_gang);
+function callDaiminkan(flag) {
+	if(flag) makeCall(getOperations().ming_gang);
+	else declineCall(getOperations().ming_gang);
 }
+window.callDaiminkan = callDaiminkan;
 
 function callRon() {
 	makeCall(getOperations().rong);
 }
+window.callRon = callRon;
 
 function callTsumo() {
 	makeCall(getOperations().zimo);
 }
+window.callTsumo = callTsumo;
 
-function callEat() {
-	makeCall(getOperations().eat);
+function callEat(flag) {
+	if(flag) makeCall(getOperations().eat);
+	else declineCall(getOperations().eat);
 	// NOT DOING : declineCall(getOperations().eat);
 }
+window.callEat = callEat;
 
-function callPeng() {
-	makeCall(getOperations().peng);
-	// NOT DOING : declineCall(getOperations().peng);
+function callPeng(flag) {
+	if(flag) makeCall(getOperations().peng);
+	else declineCall(getOperations().peng);
 }
+window.callPeng = callPeng;
 
-function canDoThirteenOrphans() {
-	return false;
-}
+// function canDoThirteenOrphans() {
+// 	return false;
+// }
 
-function callAbortiveDraw() { 
-	if (canDoThirteenOrphans()) {
-		return;
+function callAbortiveDraw(flag) { 
+	// if (canDoThirteenOrphans()) {
+	// 	return;
+	// }
+	if(flag)
+	{
+		app.NetAgent.sendReq2MJ('FastTest', 'inputOperation', { type: mjcore.E_PlayOperation.jiuzhongjiupai, index: 0, timeuse: Math.random() * 2 + 1 });
+		view.DesktopMgr.Inst.WhenDoOperation();
 	}
-	app.NetAgent.sendReq2MJ('FastTest', 'inputOperation', { type: mjcore.E_PlayOperation.jiuzhongjiupai, index: 0, timeuse: Math.random() * 2 + 1 });
-	view.DesktopMgr.Inst.WhenDoOperation();
 }
+window.callAbortiveDraw = callAbortiveDraw;
 
 function getNumberOfPlayers() {
 	if (!doesPlayerExist(1) || !doesPlayerExist(2) || !doesPlayerExist(3)) {
@@ -243,7 +257,14 @@ function isSameTile(tile1, tile2, checkDora = false) {
 	return tile1.index == tile2.index && tile1.type == tile2.type;
 }
 
-
+function discard_idx(tile_idx) {
+	if(tile_idx < 0 || tile_idx >= window.ownHand.length || !view.DesktopMgr.Inst.players[0].hand[i].valid) 
+		throw new Error("Invalid tile index");
+	view.DesktopMgr.Inst.players[0]._choose_pai = view.DesktopMgr.Inst.players[0].hand[tile_idx];
+	view.DesktopMgr.Inst.players[0].DoDiscardTile();
+	return true;
+}
+window.discard_idx = discard_idx;
 
 //Remove the given Tile from Hand
 async function discardTile(ownHand, tile) {
@@ -255,7 +276,7 @@ async function discardTile(ownHand, tile) {
                 if (view.DesktopMgr.Inst.players[0].hand[i].valid) {
                     view.DesktopMgr.Inst.players[0]._choose_pai = view.DesktopMgr.Inst.players[0].hand[i];
                     view.DesktopMgr.Inst.players[0].DoDiscardTile();
-					await sleep(1000);
+					await sleep(500);
 					return true;
                 }
             }
@@ -333,91 +354,95 @@ async function discard(inputHand) {
 
 window.discard = discard;
 
-function getOperationList() {
-	return view.DesktopMgr.Inst.oplist;
+function getOperationList(external = false) {
+	if(external) return JSON.stringify(view.DesktopMgr.Inst.oplist);
+	else return view.DesktopMgr.Inst.oplist;
 }
+
+window.getOperationList = getOperationList;
 
 // Main loop starts here
-window.Auto_run = true;
-threadIsRunning = false;
+// window.Auto_run = true;
+window.threadIsRunning = false;
 
 //Main Loop
-function main() {
-	if(!window.Auto_run)
-	{
-		console.log("Auto_run is False");
-		setTimeout(main, 500);
-		return;
-	}
-	var operations = getOperationList();
-	console.log("Main Loop"  + operations);
-	if (operations == null || operations.length == 0) {	
-		console.log("Waiting for own turn.");
-		setTimeout(main, 500);
-		return;
-	}
-	setTimeout(mainOwnTurn, 1000);
-}
+// function main() {
+// 	if(!window.Auto_run)
+// 	{
+// 		console.log("Auto_run is False");
+// 		setTimeout(main, 500);
+// 		return;
+// 	}
+// 	var operations = getOperationList();
+// 	console.log("Main Loop"  + operations);
+// 	if (operations == null || operations.length == 0) {	
+// 		console.log("Waiting for own turn.");
+// 		setTimeout(main, 500);
+// 		return;
+// 	}
+// 	setTimeout(mainOwnTurn, 1000);
+// }
 
-window.main = main;
+// window.main = main;
 
-async function mainOwnTurn() {
-	if (threadIsRunning) {
-		return;
-	}
-	threadIsRunning = true;
+// async function mainOwnTurn() {
+// 	if (threadIsRunning) {
+// 		return;
+// 	}
+// 	threadIsRunning = true;
 
-	GetHandData(); //Set current state of the board to local variables
+// 	GetHandData(); //Set current state of the board to local variables
 
-	var operations = getOperationList();
+// 	var operations = getOperationList();
 
-	console.log("##### OWN TURN #####");
+// 	console.log("##### OWN TURN #####");
 	
-	for (let operation of operations) {
-		if (getOperationList().length == 0) {
-			break;
-		}
-		switch (operation.type) {
-			case getOperations().an_gang: //From Hand
-				callAnkan(operation.combination);
-				break;
-			case getOperations().add_gang: //Add from Hand to Pon
-				callShouminkan();
-				break;
-			case getOperations().zimo:
-				callTsumo();
-				break;
-			case getOperations().rong:
-				callRon();
-				break;
-			case getOperations().jiuzhongjiupai:
-				callAbortiveDraw();
-				break;
-		}
-	}
+// 	for (let operation of operations) {
+// 		if (getOperationList().length == 0) {
+// 			break;
+// 		}
+// 		switch (operation.type) {
+// 			case getOperations().an_gang: //From Hand
+// 				callAnkan(operation.combination);
+// 				break;
+// 			case getOperations().add_gang: //Add from Hand to Pon
+// 				callShouminkan();
+// 				break;
+// 			case getOperations().zimo:
+// 				callTsumo();
+// 				break;
+// 			case getOperations().rong:
+// 				callRon();
+// 				break;
+// 			case getOperations().jiuzhongjiupai:
+// 				callAbortiveDraw();
+// 				break;
+// 		}
+// 	}
 
-	for (let operation of operations) {
-		if (getOperationList().length == 0) {
-			break;
-		}
-		switch (operation.type) {
-			case getOperations().dapai:
-				isConsideringCall = false;
-				await discard(window.ownHand);
-				break;
-			case getOperations().eat:
-				callEat();
-				break;
-			case getOperations().peng:
-				callPeng();
-				break;
-			case getOperations().ming_gang: //From others
-				callDaiminkan();
-				break;
-		}
-	}
+// 	for (let operation of operations) {
+// 		if (getOperationList().length == 0) {
+// 			break;
+// 		}
+// 		switch (operation.type) {
+// 			case getOperations().dapai:
+// 				isConsideringCall = false;
+// 				await discard(window.ownHand);
+// 				break;
+// 			case getOperations().eat:
+// 				callEat();
+// 				break;
+// 			case getOperations().peng:
+// 				callPeng();
+// 				break;
+// 			case getOperations().ming_gang: //From others
+// 				callDaiminkan();
+// 				break;
+// 		}
+// 	}
 
-	console.log("Own turn completed.");
-	threadIsRunning = false;
-	setTimeout(main, 1000);
-}
+// 	console.log("Own turn completed.");
+// 	threadIsRunning = false;
+// 	setTimeout(main, 1000);
+// }
+
