@@ -95,6 +95,12 @@ function callTsumo() {
 }
 window.callTsumo = callTsumo;
 
+function callRiichi(tile) {
+	app.NetAgent.sendReq2MJ('FastTest', 'inputOperation', { type: mjcore.E_PlayOperation.liqi, tile: tile, moqie: false, timeuse: Math.random() * 2 + 1 }); 
+	//Moqie: Throwing last drawn tile (Riichi -> false)
+}
+window.callRiichi = callRiichi;
+
 function callEat(flag) {
 	if(flag) makeCall(getOperations().eat);
 	else declineCall(getOperations().eat);
