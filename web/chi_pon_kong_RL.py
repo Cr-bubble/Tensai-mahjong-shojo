@@ -68,8 +68,8 @@ class ChiPongKongEnvironment:
         reward = (prev_distance - curr_distance) * 50
         reward += (self.count_complete_sets(hands) - self.count_complete_sets(prev_hands)) * 30
         reward += (self.count_pairs(hands) - self.count_pairs(prev_hands)) * 20
-        reward -= (self.count_isolated_tiles(hands) - self.count_isolated_tiles(prev_hands)) * 10
-
+        #reward -= (self.count_isolated_tiles(hands) - self.count_isolated_tiles(prev_hands)) * 10
+        
         if curr_distance == 0:
             reward += 1000
 
@@ -85,7 +85,7 @@ class ChiPongKongEnvironment:
             return self.state, -5, False
 
         if action == "skip":
-            return self.state, -1, False
+            return self.state, -3, False
 
         if action == "chi":
             for i in range(7):
