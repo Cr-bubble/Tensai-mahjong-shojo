@@ -1,4 +1,5 @@
 import random
+import pickle
 
 class ChiPongKongEnvironment:
     def __init__(self):
@@ -64,29 +65,16 @@ class ChiPongKongEnvironment:
         prev_distance = self.distance_to_hu(prev_hands)
         curr_distance = self.distance_to_hu(hands)
 
-        # 基本獎勵：減少距離
         reward = (prev_distance - curr_distance) * 50
-
-        # 額外獎勵：完成組
         reward += (self.count_complete_sets(hands) - self.count_complete_sets(prev_hands)) * 30
-
-        # 額外獎勵：增加對子
         reward += (self.count_pairs(hands) - self.count_pairs(prev_hands)) * 20
-
-        # 孤牌懲罰
-        reward -= (self.count_isolated_tiles(hands) - self.count_isolated_tiles(prev_hands)) * 10
-
-        # 胡牌獎勵
+        #reward -= (self.count_isolated_tiles(hands) - self.count_isolated_tiles(prev_hands)) * 10
+        
         if curr_distance == 0:
             reward += 1000
 
-        # 設置 baseline，避免過度負分
         reward = max(reward, -50)
-
         return reward
-
-
-
 
     def step(self, action):
         hands = self.state["hands"].copy()
@@ -97,7 +85,7 @@ class ChiPongKongEnvironment:
             return self.state, -5, False
 
         if action == "skip":
-            return self.state, -1, False
+            return self.state, -3, False
 
         if action == "chi":
             for i in range(7):
@@ -171,6 +159,15 @@ class RLAgent:
     def get_state_key(self, state):
         return tuple(state["hands"])
 
+    def save_q_table(self, file_path):
+        with open(file_path, 'wb') as f:
+            pickle.dump(self.q_table, f)
+
+    def load_q_table(self, file_path):
+        with open(file_path, 'rb') as f:
+            self.q_table = pickle.load(f)
+
+
 def train_agent():
     env = ChiPongKongEnvironment()
     agent = RLAgent(action_space=["chi", "pong", "kong", "skip"])
@@ -191,16 +188,25 @@ def train_agent():
             total_reward += reward
             steps += 1
 
-        # 動態調整 epsilon
         agent.epsilon = max(0.01, agent.epsilon * 0.995)
-
-        # 動態調整學習率
         agent.learning_rate = max(0.01, agent.learning_rate * 0.995)
 
         if episode % 100 == 0:
             avg_reward = total_reward / (episode + 1)
             print(f"Episode {episode}: Total Reward = {total_reward:.2f}, Avg Reward = {avg_reward:.2f}")
 
+    agent.save_q_table("q_table.pkl")
+    print("Q-Table saved.")
+
 
 if __name__ == "__main__":
+    env = ChiPongKongEnvironment()
+    agent = RLAgent(action_space=["chi", "pong", "kong", "skip"])
+
+    try:
+        agent.load_q_table("q_table.pkl")
+        print("Successfully loaded Q-Table.")
+    except FileNotFoundError:
+        print("No existing Q-Table found. Starting fresh.")
+
     train_agent()

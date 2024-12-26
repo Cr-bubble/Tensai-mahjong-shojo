@@ -1,10 +1,3 @@
-// const { randomInt } = require("firebase-tools/lib/utils");
-
-function helloword() {
-    console.log("Hello World");
-}
-
-window.helloword = helloword;
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -114,14 +107,7 @@ function callPeng(flag) {
 }
 window.callPeng = callPeng;
 
-// function canDoThirteenOrphans() {
-// 	return false;
-// }
-
 function callAbortiveDraw(flag) { 
-	// if (canDoThirteenOrphans()) {
-	// 	return;
-	// }
 	if(flag)
 	{
 		app.NetAgent.sendReq2MJ('FastTest', 'inputOperation', { type: mjcore.E_PlayOperation.jiuzhongjiupai, index: 0, timeuse: Math.random() * 2 + 1 });
@@ -246,13 +232,6 @@ function GetHandData(mainUpdate = true) {
 
 window.GetHandData = GetHandData;
 
-
-
-// // Get operations can do now
-// function getOperations() {
-// 	return mjcore.E_PlayOperation;
-// }
-
 function isSameTile(tile1, tile2, checkDora = false) {
 	if (typeof tile1 == 'undefined' || typeof tile2 == 'undefined') {
 		return false;
@@ -367,88 +346,4 @@ function getOperationList(external = false) {
 
 window.getOperationList = getOperationList;
 
-// Main loop starts here
-// window.Auto_run = true;
 window.threadIsRunning = false;
-
-//Main Loop
-// function main() {
-// 	if(!window.Auto_run)
-// 	{
-// 		console.log("Auto_run is False");
-// 		setTimeout(main, 500);
-// 		return;
-// 	}
-// 	var operations = getOperationList();
-// 	console.log("Main Loop"  + operations);
-// 	if (operations == null || operations.length == 0) {	
-// 		console.log("Waiting for own turn.");
-// 		setTimeout(main, 500);
-// 		return;
-// 	}
-// 	setTimeout(mainOwnTurn, 1000);
-// }
-
-// window.main = main;
-
-// async function mainOwnTurn() {
-// 	if (threadIsRunning) {
-// 		return;
-// 	}
-// 	threadIsRunning = true;
-
-// 	GetHandData(); //Set current state of the board to local variables
-
-// 	var operations = getOperationList();
-
-// 	console.log("##### OWN TURN #####");
-	
-// 	for (let operation of operations) {
-// 		if (getOperationList().length == 0) {
-// 			break;
-// 		}
-// 		switch (operation.type) {
-// 			case getOperations().an_gang: //From Hand
-// 				callAnkan(operation.combination);
-// 				break;
-// 			case getOperations().add_gang: //Add from Hand to Pon
-// 				callShouminkan();
-// 				break;
-// 			case getOperations().zimo:
-// 				callTsumo();
-// 				break;
-// 			case getOperations().rong:
-// 				callRon();
-// 				break;
-// 			case getOperations().jiuzhongjiupai:
-// 				callAbortiveDraw();
-// 				break;
-// 		}
-// 	}
-
-// 	for (let operation of operations) {
-// 		if (getOperationList().length == 0) {
-// 			break;
-// 		}
-// 		switch (operation.type) {
-// 			case getOperations().dapai:
-// 				isConsideringCall = false;
-// 				await discard(window.ownHand);
-// 				break;
-// 			case getOperations().eat:
-// 				callEat();
-// 				break;
-// 			case getOperations().peng:
-// 				callPeng();
-// 				break;
-// 			case getOperations().ming_gang: //From others
-// 				callDaiminkan();
-// 				break;
-// 		}
-// 	}
-
-// 	console.log("Own turn completed.");
-// 	threadIsRunning = false;
-// 	setTimeout(main, 1000);
-// }
-
